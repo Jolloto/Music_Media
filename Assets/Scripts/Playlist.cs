@@ -10,7 +10,8 @@ public class Playlist : MonoBehaviour
 
     void Start()
     {
-        audioSource = GetComponent<AudioSource>();
+        audioSource = Camera.main.GetComponent<AudioSource>();
+        // Reproduce la primera cancion cuando empieza
         PlaySong(currentSongIndex);
     }    
 
