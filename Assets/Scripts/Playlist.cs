@@ -4,21 +4,40 @@ using UnityEngine;
 
 public class Playlist : MonoBehaviour
 {
-    public List<AudioClip> canciones;
-    private AudioSource playerAudioSource;
-
+    public List<AudioClip> songs; // Lista para meter clips de audio
+    private AudioSource audioSource;
+    private int currentSongIndex = 0;
 
     void Start()
     {
-
-       
+        audioSource = Camera.main.GetComponent<AudioSource>();
+        // Reproduce la primera cancion cuando empieza
+        PlaySong(currentSongIndex);
     }    
 
-    private void Awake() 
-    {
-        playerAudioSource = GetComponent<AudioSource>();
-        playerAudioSource.clip = canciones[0];
-        playerAudioSource.Play();
-    }
- }
 
+    public void PlaySong(int index)
+    {
+        if(index >= 0 && index < songs.Count)
+        {
+            audioSource.clip = songs[index];
+            audioSource.Play();
+            currentSongIndex = index;
+        }
+    }
+
+    public void Pause()
+    {
+        audioSource.Pause();
+    }
+
+    public void Resume()
+    {
+        audioSource.UnPause();
+    }
+
+    public void Stop()
+    {
+        audioSource.Stop();
+    }
+}
