@@ -1,43 +1,98 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Playlist : MonoBehaviour
 {
-    public List<AudioClip> canciones; // Lista para meter clips de audio
-    private AudioSource AudioSource;
-    private int currentSongIndex = 0;
+    [SerializeField] private AudioClip[] cancionesArray;
+    [SerializeField]private Sprite[] ImagenesCanciones;
+
+    [SerializeField] private Button PlayBoton;
+    [SerializeField] private Button PausaBoton;
+    [SerializeField] private Button PararBoton;
+    [SerializeField] private Button LoopBoton;
+    [SerializeField] private Button AleatorioBoton;
+    [SerializeField] private Button SiguienteBoton;
+    [SerializeField] private Button AnteriorBoton;
+
+    float SliderValue;
+
+     private Image imagen;
+    [SerializeField] private AudioSource audio;
+     private TMPro.TextMeshProUGUI TituloCancion;
+
+    private float cancionLength;
+
+    private float currentTiempoCancion;
+    private bool isLooping = false;
+    private int currentCancionesIndex = 0;
 
     void Start()
     {
-        audioSource = Camera.main.GetComponent<AudioSource>();
-        // Reproduce la primera cancion cuando empieza
-        PlaySong(currentSongIndex);
-    }    
+        SliderValue = 0.5f;
+        audio = GetComponent<AudioSource>();
+        audio.Pause();
+        PlayBoton.onClick.AddListener(PlayCancion);
+        PausaBoton.onClick.AddListener(PausaCancion);
+        PararBoton.onClick.AddListener(PararCancion);
+        SiguienteBoton.onClick.AddListener(SiguienteCancion);
+        AnteriorBoton.onClick.AddListener(AnteriorCancion);
 
+   
+    }   
 
-    public void PlaySong(int index)
+    void OnGUI()
     {
-        if(index >= 0 && index < canciones.Count)
+        SliderValue = GUI.HorizontalSlider(new Rect(25, 25, 200, 60), SliderValue, 0.0F, 1.0F);
+        
+        audio.volume = SliderValue;
+    }
+
+    void PlayCurrentCancion()
+    {
+        audio.clip = cancionesArray[currentCancionesIndex];
+        audio.Play();
+    }
+
+    public void PlayCancion()
+    {
         {
-            audioSource.clip = canciones[index];
-            audioSource.Play();
-            currentSongIndex = index;
+            audio.Play();
         }
+        
     }
 
-    public void Pause()
+    public void SiguienteCancion()
     {
-        audioSource.Pause();
+        currentCancionesIndex = (currentCancionesIndex + 1) % cancionesArray.Length;
+        audio.clip = cancionesArray[currentCancionesIndex];
+        audio.Play();
+        cancionLength = audio.clip.length;
+        imagen.sprite = ImagenesCanciones[currentCancionesIndex];
+        TituloCancion.text = cancionesArray[currentCancionesIndex].name;
+
     }
 
-    public void Resume()
+    public void AnteriorCancion()
     {
-        audioSource.UnPause();
+       currentCancionesIndex = (currentCancionesIndex - 1 + cancionesArray.Length) % cancionesArray.Length;
+        audio.clip = cancionesArray[currentCancionesIndex];
+        audio.Play();
+        cancionLength = audio.clip.length;
+        imagen.sprite = ImagenesCanciones[currentCancionesIndex];
+        TituloCancion.text = cancionesArray[currentCancionesIndex].name;
+
     }
 
-    public void Stop()
+    public void PausaCancion()
     {
-        audioSource.Stop();
+        audio.Pause();
     }
+
+    public void PararCancion()
+    {
+        audio.Stop();
+    }
+   
 }
